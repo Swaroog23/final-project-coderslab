@@ -16,6 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-]
+from Buri_order_site.views import LogginView
+
+urlpatterns = [path("admin/", admin.site.urls), path("login/", LogginView.as_view())]
