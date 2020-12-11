@@ -9,11 +9,15 @@
 {% endblock  %}
 <body>
     {% block header %}
-    <!-- TODO: Anchor tag to main site on this p --><p>Buri Sushi!</p>
+    {% if user %}
+    <p>{{user.username}}</p>
+    {% endif %}
+    <a href="/main_page"><p>Buri Sushi!</p></a>
     {% endblock header %}
     {% block content %}
     {% endblock content %}
     {% block footer %}
+    <footer>Autor: Dominik Popławski</footer>
     {% endblock footer %}
 </body>
 </html>
