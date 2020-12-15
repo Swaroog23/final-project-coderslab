@@ -1,0 +1,25 @@
+
+{% block content %}
+    <ul>
+        {% for product in products %}
+        <li>
+            <h3>{{product.name}}</h3>
+            <p>Cena: {{product.price}}</p>
+            <p>{{product.details}}</p>
+        </li>
+            Składniki:
+            <ul>
+                {% for ingredient in product.ingredients.all %}
+                <li>
+                    <p>{{ingredient.name}}</p>
+                    <p>{{ingredient.is_gluten}}</p>
+                    <p>{{ingredient.is_not_vegan}}</p>
+                    <p>{{ingredient.is_allergic}}</p>
+                </li>
+                {% endfor %}
+            </ul>
+
+        
+        {% endfor %}
+    </ul>
+{% endblock content %}

@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from Buri_order_site.views import main_page_view, category_view
+from Buri_order_site.views import main_page_view, category_view, CategoryDetailView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -28,4 +28,5 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(next_page="buri-main-page")),
     path("categories/", category_view, name="categories"),
+    path("categories/<int:id>", CategoryDetailView.as_view(), name="category-details"),
 ]

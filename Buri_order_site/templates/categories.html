@@ -2,7 +2,7 @@
 {% block content %}
     <ul>
     {% for category in categories %}
-        <h3>{{category.name}}</h3>
+        <a href="/categories/{{category.id}}"><h3>{{category.name}}</h3></a>
         <li>{{category.details}}</li>
     {% endfor %}
     </ul>
