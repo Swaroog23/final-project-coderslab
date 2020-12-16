@@ -9,13 +9,12 @@ def main_page_view(request):
 
 
 def category_view(request):
-    categories = Category.objects.all()
-    return render(request, "categories.html", {"categories": categories})
+    return render(request, "categories.html")
 
 
 class CategoryDetailView(View):
     def get(self, request, id):
         category = Category.objects.get(id=id)
         products = Product.objects.filter(categories=category)
-        ctx = {"products": products}
+        ctx = {"products": products, "chosen_category": category}
         return render(request, "category_detail.html", ctx)
