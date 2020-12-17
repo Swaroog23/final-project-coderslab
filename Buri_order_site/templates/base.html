@@ -9,9 +9,10 @@
 {% endblock  %}
 <body>
     {% block header %}
-    {% if user %}
-    <p>{{user.username}}</p>
-    {% endif %}
+        {% if user.id != None %}
+            <p>Użytkownik: {{user.username}}</p>
+            <a href="/user/{{user.id}}/"">Ustawienia konta</a>
+        {% endif %}
     <a href="/main_page"><p>Buri Sushi!</p></a>
     {% endblock header %}
     {% block content %}

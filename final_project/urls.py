@@ -16,7 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from Buri_order_site.views import main_page_view, category_view, CategoryDetailView
+from Buri_order_site.views import (
+    main_page_view,
+    category_view,
+    CategoryDetailView,
+    UserSettingsView,
+)
+from django.contrib.auth.decorators import login_required
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -29,4 +36,8 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(next_page="buri-main-page")),
     path("categories/", category_view, name="categories"),
     path("categories/<int:id>", CategoryDetailView.as_view(), name="category-details"),
+    path(
+        "user/<int:user_id>/",
+        login_required(UserSettingsView.as_view()),
+    ),
 ]
