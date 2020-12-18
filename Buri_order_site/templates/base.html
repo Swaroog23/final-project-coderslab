@@ -11,7 +11,7 @@
     {% block header %}
         {% if user.id != None %}
             <p>Użytkownik: {{user.username}}</p>
-            <a href="/user/{{user.id}}/"">Ustawienia konta</a>
+            <a href="/user/{{user.id}}/">Ustawienia konta</a>
         {% endif %}
     <a href="/main_page"><p>Buri Sushi!</p></a>
     {% endblock header %}
