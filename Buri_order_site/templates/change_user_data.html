@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-{% if form.message %}
-{{form.message}}
-{% endif %}
     <form action="" method="POST">
         {{form}}
         {% csrf_token %}
