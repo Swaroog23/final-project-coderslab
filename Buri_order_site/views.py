@@ -1,11 +1,9 @@
-from Buri_order_site.models import Category, Ingredients, Product
+from Buri_order_site.models import Category, Product, Cart
 from Buri_order_site.forms import ChangeUserData
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 
 
 def main_page_view(request):
@@ -22,6 +20,16 @@ class CategoryDetailView(View):
         products = Product.objects.filter(categories=category)
         ctx = {"products": products, "chosen_category": category}
         return render(request, "category_detail.html", ctx)
+
+    def post(self, request, id):
+        response = redirect(to=f"/categories/{id}")
+        product_in_cart_id = f"{request.POST.get('cart_product')}"
+        product_in_cart_amount = f"{request.POST.get('amount_of_product')}"
+        response.set_cookie(
+            key=f"product_{product_in_cart_id}_and_amount",
+            value={product_in_cart_id: product_in_cart_amount},
+        )
+        return response
 
 
 class UserSettingsView(View):
@@ -49,3 +57,11 @@ class UserSettingsView(View):
             return render(request, "main.html")
         ctx = {"form": form}
         return render(request, "change_user_data.html", ctx)
+
+
+# class CartView(View):
+#     def get(self, request, user_id):
+#         if user_id == "None":
+#             pass
+#         else:
+#             return HttpResponse("DUPA")
