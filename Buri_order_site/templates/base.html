@@ -8,12 +8,18 @@
 </head>
 {% endblock  %}
 <body>
-    {% block header %}
-        {% if user.id != None %}
+    {% block account_and_login %}
+        {% if not user.id %}
+            <a href="/login/?next={% url 'buri-main-page' %}">Zaloguj</a><br>
+        {% else %}
             <p>Użytkownik: {{user.username}}</p>
             <a href="/user/{{user.id}}/">Ustawienia konta</a>
+            <a href="/logout/">Wyloguj</a>
         {% endif %}
-    <a href="/main_page"><p>Buri Sushi!</p></a>
+    {% endblock account_and_login %}
+    {% block header %}
+    <a href="/"><p>Buri Sushi!</p></a>
+    <a href="/cart/{{user.id}}"><p>Koszyk</p></a>
     {% endblock header %}
     {% block content %}
     {% endblock content %}
