@@ -72,7 +72,7 @@ class CartView(View):
     def get_products_cost_from_list(product_list):
         total_cost = 0
         for item in product_list:
-            total_cost += item[0].price
+            total_cost = total_cost + (item[0].price * item[1])
         return total_cost
 
     def get(self, request, user_id):
