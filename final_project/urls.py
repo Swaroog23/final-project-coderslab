@@ -49,5 +49,5 @@ urlpatterns = [
             )
         ),
     ),
-    # path("cart/<user_id>/", CartView.as_view(), name="cart"),
+    path("cart/<user_id>/", CartView.as_view(), name="cart"),
 ]
