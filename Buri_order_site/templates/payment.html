@@ -12,13 +12,8 @@
     <ul>
         <li>{{product.0.name}} x{{product.1}} </li>
     </ul>
-{% empty %}
-    <p>Koszyk jest pusty!</p>
 {% endfor %}
-{% if chosen_products|length != 0 %}
 <p>Cena: {{cost}}</p>
-<a href="payment/">Przejdź do zapłaty</a>
 {% endif %}
-
 {% endblock content %}
 

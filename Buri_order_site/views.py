@@ -81,11 +81,14 @@ class CartView(View):
         for cookie_name, cookie_value in cookies:
             if "product" and "amount" in cookie_name:
                 products_from_cookies_list.append(json.loads(cookie_value))
-        list_of_products_in_cart = CartView.get_products_from_json(
+        list_of_products_in_cart_with_amount = CartView.get_products_from_json(
             products_from_cookies_list
         )
         cost_of_products = CartView.get_products_cost_from_list(
-            list_of_products_in_cart
+            list_of_products_in_cart_with_amount
         )
-        ctx = {"chosen_products": list_of_products_in_cart, "cost": cost_of_products}
+        ctx = {
+            "chosen_products": list_of_products_in_cart_with_amount,
+            "cost": cost_of_products,
+        }
         return render(request, "cart.html", ctx)
