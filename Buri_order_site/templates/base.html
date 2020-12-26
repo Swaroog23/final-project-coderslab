@@ -10,7 +10,7 @@
 <body>
     {% block account_and_login %}
         {% if not user.id %}
-            <a href="/login/?next={% url 'buri-main-page' %}">Zaloguj</a><br>
+            <a href="/login/?next={{request.get_full_path}}">Zaloguj</a><br>
         {% else %}
             <p>Użytkownik: {{user.username}}</p>
             <a href="/user/{{user.id}}/">Ustawienia konta</a>

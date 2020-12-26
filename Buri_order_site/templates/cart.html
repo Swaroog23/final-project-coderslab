@@ -1,9 +1,11 @@
 {% extends "base.html" %}
-{% block header %}
+{% block account_and_login %}
     {% if user.id %}
             <p>Użytkownik: {{user.username}}</p>
             <a href="/user/{{user.id}}/">Ustawienia konta</a>
-        {% endif %}
+    {% endif %}
+{% endblock account_and_login %}
+{% block header %}
     <a href="/"><p>Buri Sushi!</p></a>
 {% endblock header %}
 {% block content %}
@@ -17,7 +19,7 @@
 {% endfor %}
 {% if chosen_products|length != 0 %}
 <p>Cena: {{cost}}</p>
-<a href="payment/">Przejdź do zapłaty</a>
+<a href="/cart/{{user.id}}/payment/">Przejdź do zapłaty</a>
 {% endif %}
 
 {% endblock content %}

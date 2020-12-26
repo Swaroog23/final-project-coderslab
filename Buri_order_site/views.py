@@ -1,9 +1,12 @@
+from django.http import response
 from django.http.response import HttpResponse
-from Buri_order_site.models import Category, Product, Cart
-from Buri_order_site.forms import ChangeUserData
+from Buri_order_site.models import Address, Category, Product, Cart, CartProduct
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
+
+from Buri_order_site.forms import ChangeUserData, UserAddressForm
+
 import json
 
 
@@ -87,8 +90,60 @@ class CartView(View):
         cost_of_products = CartView.get_products_cost_from_list(
             list_of_products_in_cart_with_amount
         )
+        request.session["products_ids_and_amount"] = products_from_cookies_list
         ctx = {
             "chosen_products": list_of_products_in_cart_with_amount,
             "cost": cost_of_products,
         }
         return render(request, "cart.html", ctx)
+
+
+class PaymentView(View):
+
+    TOTAL_COST_FOR_ORDER = 0
+    LIST_OF_ORDERD_PRODUCTS = []
+
+    def get(self, request, user_id):
+        list_of_products_ids_and_amount = request.session.get("products_ids_and_amount")
+        form = UserAddressForm()
+        list_of_products_models_with_amount = CartView.get_products_from_json(
+            list_of_products_ids_and_amount
+        )
+        total_cost_of_order = CartView.get_products_cost_from_list(
+            list_of_products_models_with_amount
+        )
+        PaymentView.TOTAL_COST_FOR_ORDER = total_cost_of_order
+        PaymentView.LIST_OF_ORDERD_PRODUCTS = list_of_products_models_with_amount
+        ctx = {
+            "chosen_products": list_of_products_models_with_amount,
+            "cost": total_cost_of_order,
+            "form": form,
+        }
+        return render(request, "payment.html", ctx)
+
+    def post(self, request, user_id):
+        form = UserAddressForm(request.POST)
+        if user_id != None:
+            user = User.objects.get(pk=user_id)
+            cart = Cart.objects.create(user=user, cost=0)
+            if form.is_valid():
+                user_address_street = form.cleaned_data["street"]
+                user_address_street_num = form.cleaned_data["street_number"]
+                user_address_house_num = form.cleaned_data["house_number"]
+                user.address_set.get_or_create(
+                    street=user_address_street,
+                    street_number=user_address_street_num,
+                    house_number=user_address_house_num,
+                )
+        else:
+            cart = Cart.objects.create(cost=0)
+        for product, amount in PaymentView.LIST_OF_ORDERD_PRODUCTS:
+            cart.cost += product.price * amount
+            CartProduct.objects.create(cart=cart, product=product, amount=amount)
+        cart.save()
+        response = render(request, "main.html", {"info": "Zamówienie złożone!"})
+        for cookie_name, cookie_value in request.COOKIES.items():
+            if "product" and "amount" in cookie_name:
+                response.delete_cookie(cookie_name)
+
+        return response

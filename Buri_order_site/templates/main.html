@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
     <a href="/categories/">Zobacz nasze menu!</a><br>
+    {% if info %}
+        {{info}}
+    {% endif %}
 {% endblock content %}

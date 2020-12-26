@@ -26,7 +26,7 @@ class Product(models.Model):
 
 
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     product = models.ManyToManyField(Product, through="CartProduct")
     cost = models.DecimalField(max_digits=6, decimal_places=2)
 
