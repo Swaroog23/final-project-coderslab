@@ -1,10 +1,10 @@
-from django.http import response
-from django.http.response import HttpResponse
-from Buri_order_site.models import Address, Category, Product, Cart, CartProduct
+from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
+from django.contrib.auth import login
 
+from Buri_order_site.models import Category, Product, Cart, CartProduct
 from Buri_order_site.forms import ChangeUserData, UserAddressForm
 
 import json
@@ -122,8 +122,8 @@ class PaymentView(View):
         return render(request, "payment.html", ctx)
 
     def post(self, request, user_id):
-        form = UserAddressForm(request.POST)
-        if user_id != None:
+        if user_id != "None":
+            form = UserAddressForm(request.POST)
             user = User.objects.get(pk=user_id)
             cart = Cart.objects.create(user=user, cost=0)
             if form.is_valid():
@@ -135,8 +135,7 @@ class PaymentView(View):
                     street_number=user_address_street_num,
                     house_number=user_address_house_num,
                 )
-        else:
-            cart = Cart.objects.create(cost=0)
+        cart = Cart.objects.create(cost=0)
         for product, amount in PaymentView.LIST_OF_ORDERD_PRODUCTS:
             cart.cost += product.price * amount
             CartProduct.objects.create(cart=cart, product=product, amount=amount)
@@ -147,3 +146,17 @@ class PaymentView(View):
                 response.delete_cookie(cookie_name)
 
         return response
+
+
+class CreateNewUserView(View):
+    def get(self, request):
+        form = UserCreationForm()
+        return render(request, "create_user.html", {"form": form})
+
+    def post(self, request):
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            user = User.objects.get(username=form.cleaned_data["username"])
+            login(request, user)
+        return render(request, "main.html", {"info": "Utworzono użytkownika!"})

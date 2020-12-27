@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block account_and_login %}
     {% if user.id %}
-            <p>Użytkownik: {{user.username}}</p>
-            <a href="/user/{{user.id}}/">Ustawienia konta</a>
+        <p>Użytkownik: {{user.username}}</p>
+        <a href="/user/{{user.id}}/">Ustawienia konta</a>
+    {% else %}
+        <a href="/login/?next={{request.get_full_path}}">Zaloguj</a><br>
     {% endif %}
 {% endblock account_and_login %}
 {% block header %}
