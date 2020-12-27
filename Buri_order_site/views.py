@@ -1,11 +1,12 @@
 from django.contrib.auth.forms import UserCreationForm
+from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 
-from Buri_order_site.models import Category, Product, Cart, CartProduct
-from Buri_order_site.forms import ChangeUserData, UserAddressForm
+from Buri_order_site.models import Category, Ingredients, Product, Cart, CartProduct
+from Buri_order_site.forms import AddProductForm, ChangeUserData, UserAddressForm
 
 import json
 
@@ -160,3 +161,31 @@ class CreateNewUserView(View):
             user = User.objects.get(username=form.cleaned_data["username"])
             login(request, user)
         return render(request, "main.html", {"info": "Utworzono użytkownika!"})
+
+
+class AdminAddProductView(View):
+    def get(self, request):
+        form = AddProductForm()
+        return render(request, "add_product.html", {"form": form})
+
+    def post(self, request):
+        form = AddProductForm(request.POST)
+        if form.is_valid():
+            chosen_ingredients = form.cleaned_data["ingredients"]
+            chosen_categories = form.cleaned_data["categories"]
+            name = form.cleaned_data["name"]
+            price = form.cleaned_data["price"]
+            details = form.cleaned_data["details"]
+            new_product = Product.objects.create(
+                name=name,
+                price=price,
+                details=details,
+            )
+            new_product.categories.set(chosen_categories)
+            new_product.ingredients.set(chosen_ingredients)
+            new_product.save()
+        return render(
+            request,
+            "add_product.html",
+            {"info": "Produkt dodano!", "form": AddProductForm()},
+        )

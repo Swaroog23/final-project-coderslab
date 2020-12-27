@@ -1,4 +1,5 @@
-from Buri_order_site.models import Address
+from Buri_order_site.models import Category, Ingredients
+
 from django import forms
 from django.core.validators import EmailValidator
 
@@ -14,3 +15,20 @@ class UserAddressForm(forms.Form):
     street = forms.CharField(max_length=150, label="Ulica")
     street_number = forms.IntegerField(label="Numer ulicy", min_value=1)
     house_number = forms.IntegerField(label="Numer mieszkania", min_value=1)
+
+
+class AddProductForm(forms.Form):
+    name = forms.CharField(max_length=255, label="Nazwa produktu")
+    price = forms.DecimalField(max_digits=6, decimal_places=2, label="Cena")
+    categories = forms.ModelMultipleChoiceField(
+        queryset=Category.objects.all(),
+        to_field_name="name",
+        label="Kategorie produktu",
+        widget=forms.CheckboxSelectMultiple,
+    )
+    ingredients = forms.ModelMultipleChoiceField(
+        queryset=Ingredients.objects.all(),
+        to_field_name="name",
+        label="Składniki",
+    )
+    details = forms.CharField(label="Opis", widget=forms.Textarea)

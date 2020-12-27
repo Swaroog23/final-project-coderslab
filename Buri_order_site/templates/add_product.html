@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% if "info" %}
+        <h4>{{info}}</h4>
+    {% endif %}
+    <form action="" method="POST">
+        {{form}}
+        {% csrf_token %}
+        <input type="submit" name="add_product" value="Dodaj produkt">
+    </form>
+{% endblock content %}

@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from Buri_order_site.views import (
+    AdminAddProductView,
     CreateNewUserView,
     PaymentView,
     main_page_view,
@@ -54,4 +55,5 @@ urlpatterns = [
     path("cart/<user_id>/", CartView.as_view(), name="cart"),
     path("cart/<user_id>/payment/", PaymentView.as_view(), name="payment"),
     path("create_user/", CreateNewUserView.as_view(), name="create_new_user"),
+    path("add_product/", AdminAddProductView.as_view(), name="admin_add_product"),
 ]
