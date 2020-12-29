@@ -17,14 +17,16 @@
             <a href="/user/{{user.id}}/">Ustawienia konta</a>
             <a href="/logout/">Wyloguj</a>
         {% endif %}
+        <hr>
     {% endblock account_and_login %}
     {% block header %}
-    <a href="/"><p>Strona główna</p></a>
+    <a href="/"><h3>Strona główna</h3></a>
     <a href="/cart/{{user.id}}"><p>Koszyk</p></a>
     {% endblock header %}
     {% block content %}
     {% endblock content %}
     {% block footer %}
+    <hr>
     <footer>Autor: Dominik Popławski</footer>
     {% endblock footer %}
 </body>

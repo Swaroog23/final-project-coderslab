@@ -6,9 +6,10 @@
     {% else %}
         <a href="/login/?next={{request.get_full_path}}">Zaloguj</a><br>
     {% endif %}
+    <hr>
 {% endblock account_and_login %}
 {% block header %}
-    <a href="/"><p>Strona główna</p></a>
+    <a href="/"><h3>Strona główna</h3></a>
 {% endblock header %}
 {% block content %}
 <a href="/categories/">Menu</a><br>

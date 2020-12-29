@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<p>Dodaj nowy adres dostawy:</p>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit" name="add_address" value="Dodaj adres dostawy">
+    </form>
+{% endblock content %}

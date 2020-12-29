@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 {% block account_and_login %}
+<hr>
 {% endblock account_and_login %}
     {% block header %}
-    <a href="/"><p>Strona główna</p></a>
+    <a href="/"><h3>Strona główna</h3></a>
 {% endblock header %}
 {% block content %}
+<p>Podaj login i hasło dla nowego użytkownika</p>
     <form action="" method="POST">
         {{form}}<br>
         {% csrf_token %}

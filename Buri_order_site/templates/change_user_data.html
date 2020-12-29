@@ -2,15 +2,18 @@
 {% block account_and_login %}
         <p>Użytkownik: {{user.username}}</p>
         <a href="/logout/">Wyloguj</a>
+        <hr>
 {% endblock account_and_login %}
 {% block header %}
-    <a href="/"><p>Strona główna</p></a>
+    <a href="/"><h3>Strona główna</h3></a>
 {% endblock header %}
 {% block content %}
+<p>Zmień dane użytkownika:</p>
     <form action="" method="POST">
         {{form}}
         {% csrf_token %}
         <input type="submit" value="Zapisz zmiany">
     </form>
-    <a href="/user/{{user.id}}/change_password/">Zmiana hasła</a>
+    <a href="/user/{{user.id}}/change_password/">Zmiana hasła.</a><br>
+    <a href="/user/{{user.id}}/add_new_address/">Dodaj nowy adres dostawy.</a>
 {% endblock %}
