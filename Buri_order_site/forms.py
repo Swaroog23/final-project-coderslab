@@ -1,4 +1,4 @@
-from Buri_order_site.models import Category, Ingredients
+from Buri_order_site.models import Address, Category, Ingredients
 
 from django import forms
 from django.core.validators import EmailValidator

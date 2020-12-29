@@ -20,6 +20,7 @@ from Buri_order_site.views import (
     AdminAddProductView,
     CreateNewUserView,
     PaymentView,
+    UserAddNewAddress,
     main_page_view,
     category_view,
     CategoryDetailView,
@@ -60,5 +61,10 @@ urlpatterns = [
         "add_product/",
         staff_member_required(AdminAddProductView.as_view(), login_url="/login/"),
         name="admin_add_product",
+    ),
+    path(
+        "user/<int:user_id>/add_new_address/",
+        login_required(UserAddNewAddress.as_view()),
+        name="add_new_address",
     ),
 ]

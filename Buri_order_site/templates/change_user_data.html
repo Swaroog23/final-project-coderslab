@@ -8,9 +8,21 @@
     <a href="/"><h3>Strona główna</h3></a>
 {% endblock header %}
 {% block content %}
-<p>Zmień dane użytkownika:</p>
+<p>{{info}}</p>
+<h4>Aktualne dane użytkownika:</h4>
+    <p>Nazwa użytkownika: {{logged_user.username}}</p>
+    <p>Imię: {% if logged_user.first_name %}{{logged_user.first_name}} {% else %} Nie podano {% endif %}</p>
+    <p>Nazwisko: {% if logged_user.last_name %}{{logged_user.last_name}} {% else %} Nie podano {% endif %}</p>
+    <p>Email: {% if logged_user.email %}{{logged_user.email}} {% else %} Nie podano {% endif %}</p>
+<h4>Adresy dostaw:</h4>
+<ul>
+    {% for address in logged_user.address_set.all %}
+        <li>ul. {{address.street}} {{address.street_number}}, mieszkania: {{address.house_number}}</li>
+    {% endfor %}
+</ul>
+<h4>Zmień dane użytkownika:</h4>
     <form action="" method="POST">
-        {{form}}
+        {{form}}<br>
         {% csrf_token %}
         <input type="submit" value="Zapisz zmiany">
     </form>

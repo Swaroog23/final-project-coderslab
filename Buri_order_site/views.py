@@ -4,9 +4,9 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from django.contrib.admin.views.decorators import staff_member_required
+from django.core.exceptions import ObjectDoesNotExist
 
-from Buri_order_site.models import Category, Product, Cart, CartProduct
+from Buri_order_site.models import Category, Product, Cart, CartProduct, Address
 from Buri_order_site.forms import AddProductForm, ChangeUserData, UserAddressForm
 
 import json
@@ -48,20 +48,22 @@ class UserSettingsView(View):
             "email": user.email,
         }
         form = ChangeUserData(initial=user_data)
-        ctx = {"form": form}
+        ctx = {"form": form, "logged_user": user}
         return render(request, "change_user_data.html", ctx)
 
     def post(self, request, user_id):
         form = ChangeUserData(request.POST)
         user = User.objects.get(id=user_id)
+        ctx = {"form": form, "logged_user": user}
         if form.is_valid():
             user.username = form.cleaned_data["username"]
             user.first_name = form.cleaned_data["first_name"]
             user.last_name = form.cleaned_data["last_name"]
             user.email = form.cleaned_data["email"]
             user.save()
-            return render(request, "main.html")
-        ctx = {"form": form}
+            ctx["info"] = "Pomyślnie zmieniono dane!"
+            return render(request, "change_user_data.html", ctx)
+        ctx["info"] = "Wystąpił błąd"
         return render(request, "change_user_data.html", ctx)
 
 
@@ -190,3 +192,39 @@ class AdminAddProductView(View):
             "add_product.html",
             {"info": "Produkt dodano!", "form": AddProductForm()},
         )
+
+
+class UserAddNewAddress(View):
+    def get(self, request, user_id):
+        form = UserAddressForm()
+        return render(request, "user_add_new_address.html", {"form": form})
+
+    def post(self, request, user_id):
+        form = UserAddressForm(request.POST)
+        user = User.objects.get(pk=user_id)
+        ctx = {"form": form}
+        if form.is_valid():
+            street = form.cleaned_data["street"]
+            stret_number = form.cleaned_data["street_number"]
+            house_number = form.cleaned_data["house_number"]
+            try:
+                address = Address.objects.get(
+                    user=user,
+                    street=street,
+                    street_number=stret_number,
+                    house_number=house_number,
+                )
+                if address in user.address_set.all():
+                    ctx["info"] = "Podany adres jest już zapisany!"
+                    return render(request, "user_add_new_address.html", ctx)
+            except ObjectDoesNotExist:
+                user.address_set.add(
+                    Address.objects.create(
+                        user=user,
+                        street=street,
+                        street_number=stret_number,
+                        house_number=house_number,
+                    )
+                )
+                ctx["info"] = "Pomyślnie dodano adres dostawy!"
+                return render(request, "user_add_new_address.html", ctx)
