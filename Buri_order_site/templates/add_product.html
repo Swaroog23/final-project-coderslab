@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block header %}
+    <a href="/"><p>Strona główna</p></a>
+{% endblock header %}
 {% block content %}
     {% if "info" %}
         <h4>{{info}}</h4>

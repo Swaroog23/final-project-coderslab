@@ -27,6 +27,7 @@ from Buri_order_site.views import (
     CartView,
 )
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 urlpatterns = [
@@ -55,5 +56,9 @@ urlpatterns = [
     path("cart/<user_id>/", CartView.as_view(), name="cart"),
     path("cart/<user_id>/payment/", PaymentView.as_view(), name="payment"),
     path("create_user/", CreateNewUserView.as_view(), name="create_new_user"),
-    path("add_product/", AdminAddProductView.as_view(), name="admin_add_product"),
+    path(
+        "add_product/",
+        staff_member_required(AdminAddProductView.as_view(), login_url="/login/"),
+        name="admin_add_product",
+    ),
 ]

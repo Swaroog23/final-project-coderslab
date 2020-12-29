@@ -4,8 +4,9 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.contrib.admin.views.decorators import staff_member_required
 
-from Buri_order_site.models import Category, Ingredients, Product, Cart, CartProduct
+from Buri_order_site.models import Category, Product, Cart, CartProduct
 from Buri_order_site.forms import AddProductForm, ChangeUserData, UserAddressForm
 
 import json

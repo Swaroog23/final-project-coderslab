@@ -4,4 +4,7 @@
     {% if info %}
         <h4>{{info}}</h4>
     {% endif %}
+    {% if user.is_staff %}
+        <a href="/add_product/">Dodaj produkt</a><br>
+    {% endif %}
 {% endblock content %}
