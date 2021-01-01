@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% block account_and_login %}
+    <p>Użytkownik: {{user.username}}</p>
+    <a href="/user/{{user.id}}/">Powrót ustawień konta</a>
+    <a href="/logout/">Wyloguj</a>
+    <hr>
+{% endblock account_and_login %}
 {% block content %}
 {{info}}
 <p>Dodaj nowy adres dostawy:</p>

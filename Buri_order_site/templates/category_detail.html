@@ -20,9 +20,9 @@
                 {% for ingredient in product.ingredients.all %}
                 <li>
                     <p>{{ingredient.name}}</p>
-                    <p>{{ingredient.is_gluten}}</p>
-                    <p>{{ingredient.is_not_vegan}}</p>
-                    <p>{{ingredient.is_allergic}}</p>
+                    <p>{% if ingredient.is_gluten %}- Zawiera gluten {% else %}- Nie zawiera glutenu {% endif %}</p>
+                    <p>{% if ingredient.is_not_vegan %}- Produkt mięsny {% else %}- Produkt niemięsny {% endif %} </p>
+                    <p>{% if ingredient.is_allergic %}- Może zawierać alergeny {% else %}- Nie zawiera alergenów {% endif %}</p>
                 </li>
                 {% endfor %}
             </ul>

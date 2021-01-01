@@ -228,3 +228,4 @@ class UserAddNewAddress(View):
                 )
                 ctx["info"] = "Pomyślnie dodano adres dostawy!"
                 return render(request, "user_add_new_address.html", ctx)
+        return render(request, "user_add_new_address.html", ctx)
