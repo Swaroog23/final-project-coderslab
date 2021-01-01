@@ -1,9 +1,9 @@
 from django.core.exceptions import ValidationError
 
 
-def validate_street_as_string(value):
+def validate_as_string(value):
     try:
         int(value)
-        raise ValidationError("Proszę podać prawidłowy adres")
+        raise ValidationError(f"Nieprawidłowa wartość: {value}")
     except ValueError:
         pass

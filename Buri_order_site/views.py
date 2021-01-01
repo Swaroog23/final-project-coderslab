@@ -7,7 +7,11 @@ from django.contrib.auth import login
 from django.core.exceptions import ObjectDoesNotExist
 
 from Buri_order_site.models import Category, Product, Cart, CartProduct, Address
-from Buri_order_site.forms import AddProductForm, ChangeUserData, UserAddressForm
+from Buri_order_site.forms import (
+    AddProductForm,
+    ChangeUserData,
+    UserAddressForm,
+)
 
 import json
 
@@ -187,10 +191,15 @@ class AdminAddProductView(View):
             new_product.categories.set(chosen_categories)
             new_product.ingredients.set(chosen_ingredients)
             new_product.save()
+            return render(
+                request,
+                "add_product.html",
+                {"info": "Produkt dodano!", "form": AddProductForm()},
+            )
         return render(
             request,
             "add_product.html",
-            {"info": "Produkt dodano!", "form": AddProductForm()},
+            {"form": AddProductForm(), "info": "Niepoprawne dane, spróbuj ponownie"},
         )
 
 
