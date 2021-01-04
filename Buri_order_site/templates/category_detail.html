@@ -7,6 +7,13 @@
 {% endfor %}
 {% endblock header %}
 {% block content %}
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
 <h4>Produkty w categorii {{chosen_category.name}}:</h4>
     <ul>
         {% for product in products %}

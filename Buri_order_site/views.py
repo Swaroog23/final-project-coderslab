@@ -5,6 +5,7 @@ from django.views import View
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
 
 from Buri_order_site.models import Category, Product, Cart, CartProduct, Address
 from Buri_order_site.forms import (
@@ -35,6 +36,13 @@ class CategoryDetailView(View):
         response = redirect(to=f"/categories/{id}")
         product_in_cart_id = request.POST.get("cart_product")
         product_in_cart_amount = request.POST.get("amount_of_product")
+        try:
+            int(product_in_cart_amount)
+        except ValueError:
+            messages.error(
+                request, "Błąd dodawania produktu do koszyka, spróbuj ponownie!"
+            )
+
         response.set_cookie(
             key=f"product_{product_in_cart_id}_and_amount",
             value=json.dumps({f"{product_in_cart_id}": f"{product_in_cart_amount}"}),
