@@ -7,6 +7,9 @@
 {% endblock header %}
 {% block content %}
 <p>Podaj login i hasło dla nowego użytkownika</p>
+{% if info %}
+    <h3>{{info}}</h3>
+{% endif %}
     <form action="" method="POST">
         {{form}}<br>
         {% csrf_token %}

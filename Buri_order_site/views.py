@@ -167,7 +167,12 @@ class CreateNewUserView(View):
             form.save()
             user = User.objects.get(username=form.cleaned_data["username"])
             login(request, user)
-        return render(request, "main.html", {"info": "Utworzono użytkownika!"})
+            return render(request, "main.html", {"info": "Utworzono użytkownika!"})
+        return render(
+            request,
+            "create_user.html",
+            {"info": "Wystąpił błąd, spróbuj ponownie.", "form": UserCreationForm()},
+        )
 
 
 class AdminAddProductView(View):
