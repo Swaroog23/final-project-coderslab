@@ -38,15 +38,16 @@ class CategoryDetailView(View):
         product_in_cart_amount = request.POST.get("amount_of_product")
         try:
             int(product_in_cart_amount)
-        except ValueError:
+            response.set_cookie(
+                key=f"product_{product_in_cart_id}_and_amount",
+                value=json.dumps(
+                    {f"{product_in_cart_id}": f"{product_in_cart_amount}"}
+                ),
+            )
+        except (TypeError, ValueError):
             messages.error(
                 request, "Błąd dodawania produktu do koszyka, spróbuj ponownie!"
             )
-
-        response.set_cookie(
-            key=f"product_{product_in_cart_id}_and_amount",
-            value=json.dumps({f"{product_in_cart_id}": f"{product_in_cart_amount}"}),
-        )
         return response
 
 
