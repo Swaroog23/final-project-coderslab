@@ -63,7 +63,7 @@ urlpatterns = [
     ),
     path(
         "cart/<user_id>/old_address_payment/",
-        PaymentFromOldAddressView.as_view(),
+        login_required(PaymentFromOldAddressView.as_view()),
         name="old_address_payment",
     ),
     path("create_user/", CreateNewUserView.as_view(), name="create_new_user"),
