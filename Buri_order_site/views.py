@@ -118,6 +118,12 @@ class CartView(View):
         }
         return render(request, "cart.html", ctx)
 
+    def post(self, request, user_id):
+        cookie_to_delete = request.POST.get("delete-btn")
+        response = redirect(f"/cart/{user_id}/")
+        response.delete_cookie(cookie_to_delete)
+        return response
+
 
 class PaymentView(View):
 

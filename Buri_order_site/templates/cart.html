@@ -16,6 +16,11 @@
 {% for product in chosen_products %}
     <ul>
         <li>{{product.0.name}} x{{product.1}} </li>
+        <form action="" method="POST">
+            <label for="delete-btn">Usuń produkt:</label>
+            <button type="submit" id="delete_product" name="delete-btn" value="product_{{product.0.id}}_and_amount">Usuń</button>
+            {% csrf_token %}
+        </form>
     </ul>
 {% empty %}
     <p>Koszyk jest pusty!</p>
