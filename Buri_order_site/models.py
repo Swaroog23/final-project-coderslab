@@ -18,6 +18,9 @@ class Address(models.Model):
     street_number = models.IntegerField()
     house_number = models.IntegerField()
 
+    def __str__(self):
+        return f"ul.{self.street} {self.street_number}/{self.house_number}"
+
 
 class Product(models.Model):
     name = models.CharField(max_length=255)

@@ -26,8 +26,13 @@
     <p>Koszyk jest pusty!</p>
 {% endfor %}
 {% if chosen_products|length != 0 %}
-<p>Cena: {{cost}}</p>
-<a href="/cart/{{user.id}}/payment/">Przejdź do zapłaty</a>
+    {% if user.id %}
+        <p>Cena: {{cost}}</p>
+        <a href="/cart/{{user.id}}/new_address_payment/">Zamów na nowy adres</a>
+        <a href="/cart/{{user.id}}/old_address_payment/">Zamów na stary adres</a>
+    {% else %}
+        <a href="/cart/{{user.id}}/new_address_payment/">Zamów!</a>
+    {% endif %}
 {% endif %}
 
 {% endblock content %}

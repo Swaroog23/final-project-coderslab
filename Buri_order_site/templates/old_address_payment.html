@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block account_and_login %}
+    {% if user.id %}
+            <p>Użytkownik: {{user.username}}</p>
+            <a href="/user/{{user.id}}/">Ustawienia konta</a>
+    {% endif %}
+    <hr>
+{% endblock account_and_login %}
+{% block header %}
+    <a href="/"><h3>Strona główna</h3></a>
+{% endblock header %}
+{% block content %}
+<a href="/categories/">Menu</a><br>
+{% for product in chosen_products %}
+    <ul>
+        <li>{{product.0.name}} x{{product.1}} </li>
+    </ul>
+{% endfor %}
+<p>Cena: {{cost}}</p>
+<h3> Adres dostawy </h3>
+<p>Wybierz adres zamówienia: </p>
+<form action="" method="POST">
+    {% csrf_token %}
+    {{form}}<br>
+    <input type="submit" value="Zamów" name="send">
+</form>
+{% endblock content %}
+

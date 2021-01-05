@@ -12,6 +12,7 @@ from Buri_order_site.forms import (
     AddProductForm,
     ChangeUserData,
     UserAddressForm,
+    UserOldAddressForm,
 )
 
 import json
@@ -125,7 +126,7 @@ class CartView(View):
         return response
 
 
-class PaymentView(View):
+class PaymentFromNewAddressView(View):
 
     TOTAL_COST_FOR_ORDER = 0
     LIST_OF_ORDERD_PRODUCTS = []
@@ -139,14 +140,16 @@ class PaymentView(View):
         total_cost_of_order = CartView.get_products_cost_from_list(
             list_of_products_models_with_amount
         )
-        PaymentView.TOTAL_COST_FOR_ORDER = total_cost_of_order
-        PaymentView.LIST_OF_ORDERD_PRODUCTS = list_of_products_models_with_amount
+        PaymentFromNewAddressView.TOTAL_COST_FOR_ORDER = total_cost_of_order
+        PaymentFromNewAddressView.LIST_OF_ORDERD_PRODUCTS = (
+            list_of_products_models_with_amount
+        )
         ctx = {
             "chosen_products": list_of_products_models_with_amount,
             "cost": total_cost_of_order,
             "form": form,
         }
-        return render(request, "payment.html", ctx)
+        return render(request, "new_address_payment.html", ctx)
 
     def post(self, request, user_id):
         if user_id != "None":
@@ -163,7 +166,7 @@ class PaymentView(View):
                     house_number=user_address_house_num,
                 )
         cart = Cart.objects.create(cost=0)
-        for product, amount in PaymentView.LIST_OF_ORDERD_PRODUCTS:
+        for product, amount in PaymentFromNewAddressView.LIST_OF_ORDERD_PRODUCTS:
             cart.cost += product.price * amount
             CartProduct.objects.create(cart=cart, product=product, amount=amount)
         cart.save()
@@ -171,7 +174,45 @@ class PaymentView(View):
         for cookie_name, cookie_value in request.COOKIES.items():
             if "product" and "amount" in cookie_name:
                 response.delete_cookie(cookie_name)
+        return response
 
+
+class PaymentFromOldAddressView(View):
+    TOTAL_COST_FOR_ORDER = 0
+    LIST_OF_ORDERD_PRODUCTS = []
+
+    def get(self, request, user_id):
+        user_addresses = User.objects.get(pk=user_id).address_set.all()
+        list_of_products_ids_and_amount = request.session.get("products_ids_and_amount")
+        form = UserOldAddressForm(address=user_addresses)
+        list_of_products_models_with_amount = CartView.get_products_from_json(
+            list_of_products_ids_and_amount
+        )
+        total_cost_of_order = CartView.get_products_cost_from_list(
+            list_of_products_models_with_amount
+        )
+        PaymentFromOldAddressView.TOTAL_COST_FOR_ORDER = total_cost_of_order
+        PaymentFromOldAddressView.LIST_OF_ORDERD_PRODUCTS = (
+            list_of_products_models_with_amount
+        )
+        ctx = {
+            "chosen_products": list_of_products_models_with_amount,
+            "cost": total_cost_of_order,
+            "form": form,
+        }
+        return render(request, "old_address_payment.html", ctx)
+
+    def post(self, request, user_id):
+        user = User.objects.get(pk=user_id)
+        cart = Cart.objects.create(user=user, cost=0)
+        for product, amount in PaymentFromOldAddressView.LIST_OF_ORDERD_PRODUCTS:
+            cart.cost += product.price * amount
+            CartProduct.objects.create(cart=cart, product=product, amount=amount)
+            cart.save()
+        response = render(request, "main.html", {"info": "Zamówienie złożone!"})
+        for cookie_name, cookie_value in request.COOKIES.items():
+            if "product" and "amount" in cookie_name:
+                response.delete_cookie(cookie_name)
         return response
 
 

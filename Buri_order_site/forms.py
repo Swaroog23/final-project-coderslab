@@ -1,6 +1,7 @@
 from Buri_order_site.models import Category, Ingredients
 from Buri_order_site.validators import validate_as_string, validate_as_int
 
+from django.contrib.auth.models import User
 from django import forms
 from django.core.validators import EmailValidator
 
@@ -22,6 +23,21 @@ class UserAddressForm(forms.Form):
     house_number = forms.IntegerField(
         label="Numer mieszkania", min_value=1, validators=[validate_as_int]
     )
+
+
+class UserOldAddressForm(forms.Form):
+    address = forms.ModelChoiceField(
+        queryset=User.objects.none(),
+        empty_label="Adres dostawy",
+        label="Adres",
+        to_field_name="id",
+    )
+
+    def __init__(self, *args, **kwargs):
+        query_set = kwargs.pop("address")
+        super(UserOldAddressForm, self).__init__(*args, **kwargs)
+        self.fields["address"].queryset = query_set
+        self.fields["address"].initial = query_set[len(query_set) - 1].id
 
 
 class AddProductForm(forms.Form):

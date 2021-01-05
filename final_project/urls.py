@@ -19,7 +19,8 @@ from django.contrib.auth import views as auth_views
 from Buri_order_site.views import (
     AdminAddProductView,
     CreateNewUserView,
-    PaymentView,
+    PaymentFromNewAddressView,
+    PaymentFromOldAddressView,
     UserAddNewAddress,
     main_page_view,
     category_view,
@@ -55,7 +56,16 @@ urlpatterns = [
         ),
     ),
     path("cart/<user_id>/", CartView.as_view(), name="cart"),
-    path("cart/<user_id>/payment/", PaymentView.as_view(), name="payment"),
+    path(
+        "cart/<user_id>/new_address_payment/",
+        PaymentFromNewAddressView.as_view(),
+        name="new_address_payment",
+    ),
+    path(
+        "cart/<user_id>/old_address_payment/",
+        PaymentFromOldAddressView.as_view(),
+        name="old_address_payment",
+    ),
     path("create_user/", CreateNewUserView.as_view(), name="create_new_user"),
     path(
         "add_product/",
