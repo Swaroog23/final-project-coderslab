@@ -50,7 +50,7 @@ urlpatterns = [
         "user/<int:user_id>/change_password/",
         login_required(
             auth_views.PasswordChangeView.as_view(
-                template_name="change_password.html", success_url="/main_page/"
+                template_name="change_password.html", success_url="/"
             )
         ),
     ),

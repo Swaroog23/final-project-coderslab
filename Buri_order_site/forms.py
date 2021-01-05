@@ -1,5 +1,5 @@
 from Buri_order_site.models import Category, Ingredients
-from Buri_order_site.validators import validate_as_string
+from Buri_order_site.validators import validate_as_string, validate_as_int
 
 from django import forms
 from django.core.validators import EmailValidator
@@ -16,8 +16,12 @@ class UserAddressForm(forms.Form):
     street = forms.CharField(
         max_length=150, label="Ulica", validators=[validate_as_string]
     )
-    street_number = forms.IntegerField(label="Numer ulicy", min_value=1)
-    house_number = forms.IntegerField(label="Numer mieszkania", min_value=1)
+    street_number = forms.IntegerField(
+        label="Numer ulicy", min_value=1, validators=[validate_as_int]
+    )
+    house_number = forms.IntegerField(
+        label="Numer mieszkania", min_value=1, validators=[validate_as_int]
+    )
 
 
 class AddProductForm(forms.Form):
