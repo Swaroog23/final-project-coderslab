@@ -17,3 +17,8 @@ def test_create_new_user_and_login(client):
     assert User.objects.count() == user_count_before + 1
     logged_client = client.login(username="Test", password="hasło1234")
     assert logged_client == True
+
+
+def test_logout_user(client):
+    response = client.get("/logout/")
+    assert response.status_code == 302
