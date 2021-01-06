@@ -15,10 +15,12 @@ def test_create_new_user_and_login(client):
     )
     assert user_create.status_code == 200
     assert User.objects.count() == user_count_before + 1
-    logged_client = client.login(username="Test", password="hasło1234")
-    assert logged_client == True
+    assert client.login(username="Test", password="hasło1234")
 
 
-def test_logout_user(client):
+@pytest.mark.django_db
+def test_logout_user(client, create_user_for_test):
+    assert client.login(username="Test", password="hasło1234") == True
     response = client.get("/logout/")
     assert response.status_code == 302
+    assert response.url == "/"

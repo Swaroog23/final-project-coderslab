@@ -41,7 +41,10 @@ urlpatterns = [
         auth_views.LoginView.as_view(template_name="login.html"),
         name="login",
     ),
-    path("logout/", auth_views.LogoutView.as_view(next_page="buri-main-page")),
+    path(
+        "logout/",
+        login_required(auth_views.LogoutView.as_view(next_page="buri-main-page")),
+    ),
     path("categories/", category_view, name="categories"),
     path("categories/<int:id>", CategoryDetailView.as_view(), name="category-details"),
     path(
