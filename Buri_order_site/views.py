@@ -307,15 +307,18 @@ class UserAddNewAddress(View):
 
 class UserDeleteAddressView(View):
     def get(self, request, user_id):
-        user = User.objects.get(pk=user_id)
-        form = UserOldAddressForm(address=user.address_set.all())
-        ctx = {"form": form}
+        user_addresses = User.objects.get(pk=user_id).address_set.all()
+        form = UserOldAddressForm(address=user_addresses)
+        ctx = {"form": form, "user_addresses": user_addresses}
         return render(request, "delete_address.html", ctx)
 
     def post(self, request, user_id):
-        user = User.objects.get(pk=user_id)
-        form = UserOldAddressForm(request.POST, address=user.address_set.all())
-        ctx = {"form": UserOldAddressForm(address=user.address_set.all())}
+        user_addresses = User.objects.get(pk=user_id).address_set.all()
+        form = UserOldAddressForm(request.POST, address=user_addresses)
+        ctx = {
+            "form": UserOldAddressForm(address=user_addresses),
+            "user_addresses": user_addresses,
+        }
         if form.is_valid():
             address = form.cleaned_data["address"]
             address.delete()

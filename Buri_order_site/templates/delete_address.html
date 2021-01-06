@@ -7,10 +7,14 @@
 {% endblock account_and_login %}
 {% block content %}
 {{info}}
+{% if user_addresses|length != 0 %}
 <p>Wybierz adres do usunięcia:</p>
     <form action="" method="POST">
         {% csrf_token %}
         {{form}}
         <input type="submit" name="delete_address" value="Usuń adres dostawy">
     </form>
+{% else %}
+    <p>Brak zapisanych adresów!</p>
+{% endif %}
 {% endblock content %}

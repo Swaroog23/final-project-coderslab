@@ -37,7 +37,6 @@ class UserOldAddressForm(forms.Form):
         query_set = kwargs.pop("address")
         super(UserOldAddressForm, self).__init__(*args, **kwargs)
         self.fields["address"].queryset = query_set
-        self.fields["address"].initial = query_set[len(query_set) - 1].id
 
 
 class AddProductForm(forms.Form):
