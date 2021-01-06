@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block account_and_login %}
+    <p>Użytkownik: {{user.username}}</p>
+    <a href="/user/{{user.id}}/">Powrót ustawień konta</a>
+    <a href="/logout/">Wyloguj</a>
+    <hr>
+{% endblock account_and_login %}
+{% block content %}
+{{info}}
+<p>Wybierz adres do usunięcia:</p>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit" name="delete_address" value="Usuń adres dostawy">
+    </form>
+{% endblock content %}

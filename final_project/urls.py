@@ -27,6 +27,7 @@ from Buri_order_site.views import (
     CategoryDetailView,
     UserSettingsView,
     CartView,
+    UserDeleteAddressView,
 )
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -76,5 +77,10 @@ urlpatterns = [
         "user/<int:user_id>/add_new_address/",
         login_required(UserAddNewAddress.as_view()),
         name="add_new_address",
+    ),
+    path(
+        "user/<int:user_id>/delete_address/",
+        login_required(UserDeleteAddressView.as_view()),
+        name="delete_address",
     ),
 ]

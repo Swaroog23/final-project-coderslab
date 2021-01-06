@@ -9,6 +9,8 @@
 <p>Podane hasło i nazwa użytkownika nie pasują do siebie. Spróbuj ponownie.</p>
 {% endif %}
 
+{% if error %}{{error}}{% endif %}
+
 <form method="post" action="{% url 'login' %}">
     <label for="username">Nazwa użytkownika</label><br>
     <input type="text" name="username"><br>

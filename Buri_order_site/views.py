@@ -303,3 +303,23 @@ class UserAddNewAddress(View):
                 ctx["info"] = "Pomyślnie dodano adres dostawy!"
                 return render(request, "user_add_new_address.html", ctx)
         return render(request, "user_add_new_address.html", ctx)
+
+
+class UserDeleteAddressView(View):
+    def get(self, request, user_id):
+        user = User.objects.get(pk=user_id)
+        form = UserOldAddressForm(address=user.address_set.all())
+        ctx = {"form": form}
+        return render(request, "delete_address.html", ctx)
+
+    def post(self, request, user_id):
+        user = User.objects.get(pk=user_id)
+        form = UserOldAddressForm(request.POST, address=user.address_set.all())
+        ctx = {"form": UserOldAddressForm(address=user.address_set.all())}
+        if form.is_valid():
+            address = form.cleaned_data["address"]
+            address.delete()
+            ctx["info"] = "Adres usunięty!"
+            return render(request, "delete_address.html", ctx)
+        ctx["info"] = "Adres nie istnieje!"
+        return render(request, "delete_address.html", ctx)
