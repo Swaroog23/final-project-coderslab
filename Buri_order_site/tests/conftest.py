@@ -16,4 +16,5 @@ def client():
 
 @pytest.fixture
 def create_user_for_test():
-    User.objects.create_user(username="Test", password="hasło1234")
+    test_user = User.objects.create_user(username="Test", password="hasło1234")
+    return test_user
