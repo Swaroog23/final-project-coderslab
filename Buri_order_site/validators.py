@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 
 def validate_as_string(value):
@@ -12,3 +13,11 @@ def validate_as_string(value):
 def validate_as_int(value):
     if not isinstance(value, int):
         raise ValidationError(f"Nieprawidłowa wartość: {value}")
+
+
+def validate_username_is_unique(value):
+    try:
+        User.objects.get(username=value)
+        raise ValidationError
+    except User.DoesNotExist:
+        pass
