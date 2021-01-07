@@ -32,7 +32,8 @@ class UserOldAddressForm(forms.Form):
         label="Adres",
         to_field_name="id",
     )
-
+    # Method for dynamic model queryset, so that views show only selected users
+    # addresses.
     def __init__(self, *args, **kwargs):
         query_set = kwargs.pop("address")
         super(UserOldAddressForm, self).__init__(*args, **kwargs)

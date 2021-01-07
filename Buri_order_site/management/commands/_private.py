@@ -6,6 +6,8 @@ fake = Faker("pl_PL")
 
 
 def create_category():
+    """Generates set of categories from menu, with name and detail"""
+
     Category.objects.create(name="Zupy", details="Tradycyjne zupy japońskie")
     Category.objects.create(name="Dania ciepłe", details="Tradycyjne dania japońskie")
     Category.objects.create(
@@ -65,6 +67,8 @@ def create_category():
 
 
 def create_products():
+    """Creates for each category set of products to fill the database"""
+
     for category in Category.objects.all():
         for _ in range(0, 10):
             category.products.create(
@@ -75,6 +79,8 @@ def create_products():
 
 
 def create_ingredients():
+    """For each product creates set of ingredeitns with every field set"""
+
     for product in Product.objects.all():
         for i in range(3, 6):
             if i % 2 == 0:
