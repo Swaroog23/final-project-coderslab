@@ -25,7 +25,7 @@ from Buri_order_site.views import (
     main_page_view,
     category_view,
     CategoryDetailView,
-    UserSettingsView,
+    UserDetailView,
     CartView,
     UserDeleteAddressView,
 )
@@ -49,7 +49,7 @@ urlpatterns = [
     path("categories/<int:id>", CategoryDetailView.as_view(), name="category-details"),
     path(
         "user/<int:user_id>/",
-        login_required(UserSettingsView.as_view()),
+        login_required(UserDetailView.as_view()),
     ),
     path(
         "user/<int:user_id>/change_password/",
