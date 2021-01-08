@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
+from django.db.utils import IntegrityError
 
 from Buri_order_site.models import Category, Product, Cart, CartProduct, Address
 from Buri_order_site.forms import (
@@ -60,7 +61,7 @@ class CategoryDetailView(View):
         product_in_cart_id = request.POST.get("cart_product")
         product_in_cart_amount = request.POST.get("amount_of_product")
         try:
-            if 10 > int(product_in_cart_amount) > 0:
+            if 10 >= int(product_in_cart_amount) > 0:
                 response.set_cookie(
                     key=f"product_{product_in_cart_id}_and_amount",
                     value=json.dumps(
@@ -68,17 +69,17 @@ class CategoryDetailView(View):
                     ),
                 )
             else:
-                messages.error(
-                    request, "Błąd dodawania produktu do koszyka, spróbuj ponownie!"
-                )
-        except (TypeError, ValueError):
+                messages.error(request, "Zła ilość produktów!")
+        except ValueError:
+            messages.error(request, "Ilość produktów musi być cyfrą pomiędzy 10, a 1!")
+        except TypeError:
             messages.error(
                 request, "Błąd dodawania produktu do koszyka, spróbuj ponownie!"
             )
         return response
 
 
-class UserSettingsView(View):
+class UserDetailView(View):
     """View returning users data and form to change that data."""
 
     def get(self, request, user_id):
@@ -120,6 +121,7 @@ class UserSettingsView(View):
             user.last_name = form.cleaned_data["last_name"]
             user.email = form.cleaned_data["email"]
             user.save()
+
             ctx["info"] = "Pomyślnie zmieniono dane!"
             return render(request, "change_user_data.html", ctx)
         ctx["info"] = "Wystąpił błąd"
