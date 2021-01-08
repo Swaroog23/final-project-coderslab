@@ -28,6 +28,7 @@ from Buri_order_site.views import (
     UserDetailView,
     CartView,
     UserDeleteAddressView,
+    ChangeUsernameView,
 )
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -50,6 +51,10 @@ urlpatterns = [
     path(
         "user/<int:user_id>/",
         login_required(UserDetailView.as_view()),
+    ),
+    path(
+        "user/<int:user_id>/change_username/",
+        login_required(ChangeUsernameView.as_view()),
     ),
     path(
         "user/<int:user_id>/change_password/",

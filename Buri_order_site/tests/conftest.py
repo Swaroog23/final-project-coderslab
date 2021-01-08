@@ -35,15 +35,3 @@ def create_ingredient():
         name="Test_ing", is_gluten=True, is_not_vegan=True, is_allergic=True
     )
     return ingredient
-
-
-@pytest.fixture
-def create_product():
-    product = Product.objects.create(
-        name="test",
-        price=10,
-        categories=create_category(),
-        ingredients=create_ingredient(),
-        details="test",
-    )
-    return product

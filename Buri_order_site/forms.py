@@ -1,3 +1,4 @@
+from django.db.models import fields
 from Buri_order_site.models import Category, Ingredients
 from Buri_order_site.validators import (
     validate_as_string,
@@ -10,12 +11,15 @@ from django import forms
 from django.core.validators import EmailValidator
 
 
-class ChangeUserData(forms.Form):
+class ChangeUsernameForm(forms.Form):
     username = forms.CharField(
-        max_length=100,
-        label="Nazwa użytkownika",
+        max_length=25,
+        label="Nowa nazwa użytkownika",
         validators=[validate_username_is_unique],
     )
+
+
+class ChangeUserData(forms.Form):
     first_name = forms.CharField(max_length=100, label="Imię")
     last_name = forms.CharField(max_length=100, label="Nazwisko")
     email = forms.EmailField(validators=[EmailValidator])

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block account_and_login %}
+        <p>Użytkownik: {{user.username}}</p>
+        <a href="/user/{{logged_user.id}}/">Powrót do ustawień konta</a>
+        <a href="/logout/">Wyloguj</a>
+        <hr>
+{% endblock account_and_login %}
+{% block header %}
+    <a href="/"><h3>Strona główna</h3></a>
+{% endblock header %}
+{% block content %}
+<p>{{info}}</p>
+<h4>Aktualna nazwa użytkownika:</h4>
+    {{logged_user.username}}
+<h4>Zmień nazwę użytkownika:</h4>
+    <form action="" method="POST">
+        {{form}}<br>
+        {% csrf_token %}
+        <input type="submit" value="Zapisz zmiany">
+    </form>
+{% endblock %}

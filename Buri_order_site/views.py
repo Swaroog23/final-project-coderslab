@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
-from django.db.utils import IntegrityError
 
 from Buri_order_site.models import Category, Product, Cart, CartProduct, Address
 from Buri_order_site.forms import (
@@ -13,6 +12,7 @@ from Buri_order_site.forms import (
     ChangeUserData,
     UserAddressForm,
     UserOldAddressForm,
+    ChangeUsernameForm,
 )
 
 import json
@@ -79,6 +79,43 @@ class CategoryDetailView(View):
         return response
 
 
+class ChangeUsernameView(View):
+    """View for changing username."""
+
+    def get(self, request, user_id):
+        """Method for GET request.
+
+        Args:
+            user_id ([int]): Id of user object.
+
+        Returns:
+            Form for changing username.
+        """
+        user = User.objects.get(id=user_id)
+        form = ChangeUsernameForm()
+        ctx = {"form": form, "logged_user": user}
+        return render(request, "change_username.html", ctx)
+
+    def post(self, request, user_id):
+        """Method for POST request. Changes username if username is not taken.
+
+        Args:
+            user_id ([int]): Id of User objects
+
+        Returns:
+            If username is free, saves it and returns user to same site.
+        """
+        form = ChangeUsernameForm(request.POST)
+        user = User.objects.get(id=user_id)
+        ctx = {"form": form, "logged_user": user}
+        if form.is_valid():
+            user.username = form.cleaned_data["username"]
+            user.save()
+            ctx["info"] = "Pomyślnie zmieniono nazwę użytkownika!"
+            return render(request, "change_username.html", ctx)
+        return render(request, "change_username.html", ctx)
+
+
 class UserDetailView(View):
     """View returning users data and form to change that data."""
 
@@ -93,7 +130,6 @@ class UserDetailView(View):
         """
         user = User.objects.get(id=user_id)
         user_data = {
-            "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email,
@@ -116,12 +152,10 @@ class UserDetailView(View):
         user = User.objects.get(id=user_id)
         ctx = {"form": form, "logged_user": user}
         if form.is_valid():
-            user.username = form.cleaned_data["username"]
             user.first_name = form.cleaned_data["first_name"]
             user.last_name = form.cleaned_data["last_name"]
             user.email = form.cleaned_data["email"]
             user.save()
-
             ctx["info"] = "Pomyślnie zmieniono dane!"
             return render(request, "change_user_data.html", ctx)
         ctx["info"] = "Wystąpił błąd"
@@ -180,6 +214,7 @@ class CartView(View):
         for cookie_name, cookie_value in cookies:
             if "product" and "amount" in cookie_name:
                 products_from_cookies_list.append(json.loads(cookie_value))
+        print(products_from_cookies_list)
         list_of_products_in_cart_with_amount = CartView.get_products_from_json(
             products_from_cookies_list
         )
@@ -272,7 +307,8 @@ class PaymentFromNewAddressView(View):
                     street_number=user_address_street_num,
                     house_number=user_address_house_num,
                 )
-        cart = Cart.objects.create(cost=0)
+        else:
+            cart = Cart.objects.create(cost=0)
         for product, amount in PaymentFromNewAddressView.LIST_OF_ORDERD_PRODUCTS:
             cart.cost += product.price * amount
             CartProduct.objects.create(cart=cart, product=product, amount=amount)

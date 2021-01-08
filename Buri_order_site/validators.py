@@ -18,6 +18,6 @@ def validate_as_int(value):
 def validate_username_is_unique(value):
     try:
         User.objects.get(username=value)
-        raise ValidationError
+        raise ValidationError("Nazwa użytkownika jest zajęta!")
     except User.DoesNotExist:
         pass
