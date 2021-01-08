@@ -1,6 +1,7 @@
-from Buri_order_site.models import Address, CartProduct, Category, Product, Cart
 from django.contrib.auth.models import User
 from django.http.cookie import SimpleCookie
+
+from Buri_order_site.models import Address, CartProduct, Product, Cart
 
 import pytest
 import json

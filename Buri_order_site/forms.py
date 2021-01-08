@@ -1,14 +1,13 @@
-from django.db.models import fields
+from django.contrib.auth.models import User
+from django import forms
+from django.core.validators import EmailValidator
+
 from Buri_order_site.models import Category, Ingredients
 from Buri_order_site.validators import (
     validate_as_string,
     validate_as_int,
     validate_username_is_unique,
 )
-
-from django.contrib.auth.models import User
-from django import forms
-from django.core.validators import EmailValidator
 
 
 class ChangeUsernameForm(forms.Form):

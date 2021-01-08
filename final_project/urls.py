@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+
 from Buri_order_site.views import (
     AdminAddProductView,
     CreateNewUserView,
@@ -30,8 +33,6 @@ from Buri_order_site.views import (
     UserDeleteAddressView,
     ChangeUsernameView,
 )
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
 
 
 urlpatterns = [

@@ -1,10 +1,12 @@
+from django.test import Client
+from django.contrib.auth.models import User
+
 from Buri_order_site.models import Category, Ingredients, Product
+
 import pytest
 import sys
 import os
 
-from django.test import Client
-from django.contrib.auth.models import User
 
 sys.path.append(os.path.dirname(__file__))
 
