@@ -9,6 +9,8 @@ import json
 
 @pytest.mark.django_db
 def test_create_new_user_and_login(client):
+    """Test if it is posible to create user and login"""
+
     response = client.get("/create_user/")
     assert response.status_code == 200
     user_count_before = User.objects.count()
@@ -18,11 +20,14 @@ def test_create_new_user_and_login(client):
     )
     assert user_created_response.status_code == 200
     assert User.objects.count() == user_count_before + 1
+    client.logout()
     assert client.login(username="Test", password="hasło1234")
 
 
 @pytest.mark.django_db
 def test_change_user_data(client, create_user_for_test):
+    """Test if user can change credentials"""
+
     client.login(username="Test", password="hasło1234")
     new_data = {
         "first_name": "test_first",
@@ -38,6 +43,7 @@ def test_change_user_data(client, create_user_for_test):
 
 @pytest.mark.django_db
 def test_change_username(client, create_user_for_test):
+    """Test if user can change username"""
     client.login(username="Test", password="hasło1234")
     response = client.post(
         f"/user/{create_user_for_test.id}/change_username/", {"username": "Test1"}
@@ -48,6 +54,7 @@ def test_change_username(client, create_user_for_test):
 
 @pytest.mark.django_db
 def test_change_password(client, create_user_for_test):
+    """Test if user can change password"""
     client.login(username="Test", password="hasło1234")
     new_data = {
         "old_password": "hasło1234",
@@ -65,6 +72,7 @@ def test_change_password(client, create_user_for_test):
 
 @pytest.mark.django_db
 def test_logout_user(client, create_user_for_test):
+    """Test if user can logout"""
     assert client.login(username="Test", password="hasło1234") == True
     response = client.get("/logout/")
     assert response.status_code == 302
@@ -73,6 +81,7 @@ def test_logout_user(client, create_user_for_test):
 
 @pytest.mark.django_db
 def test_add_new_address(client, create_user_for_test):
+    """Test if user can add new address to account"""
     client.login(username="Test", password="hasło1234")
     addresses_before = Address.objects.count()
     new_address = {"street": "test", "street_number": 1, "house_number": 1}
@@ -89,9 +98,8 @@ def test_add_new_address(client, create_user_for_test):
 
 
 @pytest.mark.django_db
-def test_delete_new_address(
-    client, create_user_for_test, create_category, create_ingredient
-):
+def test_delete_saved_address(client, create_user_for_test):
+    """Test if user can delete saved address"""
     client.login(username="Test", password="hasło1234")
     new_address = {"street": "test", "street_number": 1, "house_number": 1}
     response = client.post(
@@ -109,6 +117,7 @@ def test_delete_new_address(
 
 @pytest.mark.django_db
 def test_add_product(client, create_user_for_test, create_category, create_ingredient):
+    """Test if staff user can add new prodcut"""
     client.login(username="Test", password="hasło1234")
     products_before = Product.objects.count()
     new_product = {
@@ -126,6 +135,7 @@ def test_add_product(client, create_user_for_test, create_category, create_ingre
 
 @pytest.mark.django_db
 def test_add_to_cart(client, create_ingredient, create_category, create_user_for_test):
+    """Test if logged user can add product to cart"""
     client.login(username="Test", password="hasło1234")
     new_product = {
         "name": "test",
@@ -156,6 +166,7 @@ def test_add_to_cart(client, create_ingredient, create_category, create_user_for
 def test_add_to_cart_anonymous_user(
     client, create_user_for_test, create_ingredient, create_category
 ):
+    """Test if anonymous user can add product to cart"""
     client.login(username="Test", password="hasło1234")
     new_product = {
         "name": "test",
@@ -187,6 +198,7 @@ def test_add_to_cart_anonymous_user(
 def test_delete_product_from_cart(
     client, create_ingredient, create_category, create_user_for_test
 ):
+    """Test if logged user can delete product from cart"""
     client.login(username="Test", password="hasło1234")
     new_product = {
         "name": "test",
@@ -218,6 +230,7 @@ def test_delete_product_from_cart(
 def test_delete_product_from_cart_anonymous_user(
     client, create_ingredient, create_category, create_user_for_test
 ):
+    """Test if anonymous user can delete product from cart"""
     client.login(username="Test", password="hasło1234")
     new_product = {
         "name": "test",
@@ -244,9 +257,10 @@ def test_delete_product_from_cart_anonymous_user(
 
 
 @pytest.mark.django_db
-def test_new_address_payment(
+def test_new_address_order(
     client, create_ingredient, create_category, create_user_for_test
 ):
+    """Test if logged user can make an order on a new address an if address is saved"""
     client.login(username="Test", password="hasło1234")
     new_product = {
         "name": "test",
@@ -285,9 +299,10 @@ def test_new_address_payment(
 
 
 @pytest.mark.django_db
-def test_new_address_payment_anonymous_user(
+def test_order_anonymous_user(
     client, create_ingredient, create_category, create_user_for_test
 ):
+    """Test if anonymous user can make an order"""
     client.login(username="Test", password="hasło1234")
     new_product = {
         "name": "test",
@@ -324,9 +339,10 @@ def test_new_address_payment_anonymous_user(
 
 
 @pytest.mark.django_db
-def test_old_address_payment(
+def test_old_address_order(
     client, create_user_for_test, create_ingredient, create_category
 ):
+    """Test if user can make order on saved address"""
     client.login(username="Test", password="hasło1234")
     new_product = {
         "name": "test",
