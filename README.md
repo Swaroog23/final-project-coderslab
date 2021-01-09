@@ -5,7 +5,9 @@ Simple ordering site.
 Project made for Coders Lab Bootcamp.
 
 ## Simple overview
-Project was made with inspiration from my local restaurant. I tried to write simple order site with User managment, and order address saving for tracking who ordered what. Users can change their credentials or add new delivery addresses in relation with their own user account. Most of menu is populated with Faker, so that i don't have to write every single product into databse now, and can focus of making it functional.
+Project was made with inspiration from my local restaurant. I tried to write simple order site with User managment, and order address saving for tracking who ordered what. Users can change their credentials or add new delivery addresses in relation with their own user account. They can also make orders to new or old account. If new address is not in database in relation with user, it will be saved in relation with ordering user.
+
+Most of menu is populated with Faker, so that i don't have to write every single product into databse now, and can focus of making it functional.
 Site has several test wroten in *tests* folder.
 
 ## Features:
