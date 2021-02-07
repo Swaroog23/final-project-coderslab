@@ -60,22 +60,17 @@ class CategoryDetailView(View):
         response = redirect(to=f"/categories/{id}")
         product_in_cart_id = request.POST.get("cart_product")
         product_in_cart_amount = request.POST.get("amount_of_product")
-        try:
-            if 10 >= int(product_in_cart_amount) > 0:
-                response.set_cookie(
-                    key=f"product_{product_in_cart_id}_and_amount",
-                    value=json.dumps(
-                        {f"{product_in_cart_id}": f"{product_in_cart_amount}"}
-                    ),
-                )
-            else:
-                messages.error(request, "Zła ilość produktów!")
-        except ValueError:
-            messages.error(request, "Ilość produktów musi być cyfrą pomiędzy 10, a 1!")
-        except TypeError:
+        if not product_in_cart_amount.isnumeric():
             messages.error(
                 request, "Błąd dodawania produktu do koszyka, spróbuj ponownie!"
             )
+            return response
+        elif 1 > int(product_in_cart_amount) > 10:
+            messages.error(
+                request, "Ilość produktu nie może być większa niż 10 i mniejsza niż 1!"
+            )
+            return response
+        request.session[product_in_cart_id] = product_in_cart_amount
         return response
 
 
@@ -163,24 +158,20 @@ class UserDetailView(View):
 
 
 class CartView(View):
+
     """View for cart of user"""
 
-    def get_products_from_json(product_list):
-        """Method for changing json data into list containg product model and amount
-        chosen by user.
-
-        Args:
-            product_list (): list of json items from cookies
+    def get_products_from_session(request):
+        """Method for getting items from sessions
 
         Returns:
-            list: list of touples (model product, amount)
+            List of touples containing Product object and chosen amount by user
         """
-        list_of_product_objects = []
-        for json_item in product_list:
-            for product_id, amount in json_item.items():
-                product_from_db = Product.objects.get(pk=int(product_id))
-                list_of_product_objects.append((product_from_db, int(amount)))
-        return list_of_product_objects
+        cart_items = []
+        for item, amount in request.session.items():
+            if item.isnumeric():
+                cart_items.append((item, amount))
+        return cart_items
 
     def get_products_cost_from_list(product_list):
         """Method for calculating total cost of products in product_list
@@ -193,37 +184,30 @@ class CartView(View):
         """
         total_cost = 0
         for item in product_list:
-            total_cost = total_cost + (item[0].price * item[1])
+            total_cost = total_cost + (
+                Product.objects.get(pk=item[0]).price * int(item[1])
+            )
         return total_cost
 
     def get(self, request, user_id):
-        """Method for GET request. If there are no products in cookies, informs
-        user that cart is empty.
+        """
 
         Args:
             user_id (int/None): id of a user accessing site.
                                 If user is not logged in, value can be None.
 
         Returns:
-            List of product models taken form cookies set by Category Detail View,
-            with calculated total cost. Saves unloaded json to sessions memory,
-            for use in other views.
+
         """
-        cookies = request.COOKIES.items()
-        products_from_cookies_list = []
-        for cookie_name, cookie_value in cookies:
-            if "product" and "amount" in cookie_name:
-                products_from_cookies_list.append(json.loads(cookie_value))
-        print(products_from_cookies_list)
-        list_of_products_in_cart_with_amount = CartView.get_products_from_json(
-            products_from_cookies_list
+        product_ids_and_amount = CartView.get_products_from_session(request)
+        cost_of_products = CartView.get_products_cost_from_list(product_ids_and_amount)
+        cart_products = Product.get_products_and_amounts_from_list(
+            product_ids_and_amount
         )
-        cost_of_products = CartView.get_products_cost_from_list(
-            list_of_products_in_cart_with_amount
-        )
-        request.session["products_ids_and_amount"] = products_from_cookies_list
+        request.session["cart_products"] = product_ids_and_amount
+        request.session["cost"] = float(cost_of_products)
         ctx = {
-            "chosen_products": list_of_products_in_cart_with_amount,
+            "chosen_products": cart_products,
             "cost": cost_of_products,
         }
         return render(request, "cart.html", ctx)
@@ -238,17 +222,16 @@ class CartView(View):
         Returns:
             Response redirect to cart view and deletes chosen product from cookies.
         """
-        cookie_to_delete = request.POST.get("delete-btn")
-        response = redirect(f"/cart/{user_id}/")
-        response.delete_cookie(cookie_to_delete)
-        return response
+        item_to_delete = request.POST.get("delete-btn")
+        request.session.pop(item_to_delete)
+
+        return redirect(f"/cart/{user_id}/")
 
 
 class PaymentFromNewAddressView(View):
     """View for ordering from new address for logged user. If user is not logged,
     its the only avaiable order form."""
 
-    TOTAL_COST_FOR_ORDER = 0
     LIST_OF_ORDERD_PRODUCTS = []
 
     def get(self, request, user_id):
@@ -263,22 +246,15 @@ class PaymentFromNewAddressView(View):
             Form with fields to put order address in, with list of products models,
             amount and total cost.
         """
-        list_of_products_ids_and_amount = request.session.get("products_ids_and_amount")
+        cart_products = request.session["cart_products"]
+        cost_of_products = request.session["cost"]
         form = UserAddressForm()
-        list_of_products_models_with_amount = CartView.get_products_from_json(
-            list_of_products_ids_and_amount
-        )
-        total_cost_of_order = CartView.get_products_cost_from_list(
-            list_of_products_models_with_amount
-        )
-        PaymentFromNewAddressView.TOTAL_COST_FOR_ORDER = total_cost_of_order
-        PaymentFromNewAddressView.LIST_OF_ORDERD_PRODUCTS = (
-            list_of_products_models_with_amount
-        )
+        products = Product.get_products_and_amounts_from_list(cart_products)
+        PaymentFromNewAddressView.LIST_OF_ORDERD_PRODUCTS = products
         ctx = {
-            "chosen_products": list_of_products_models_with_amount,
-            "cost": total_cost_of_order,
             "form": form,
+            "chosen_products": products,
+            "cost": cost_of_products,
         }
         return render(request, "new_address_payment.html", ctx)
 
@@ -297,7 +273,7 @@ class PaymentFromNewAddressView(View):
         if user_id != "None":
             form = UserAddressForm(request.POST)
             user = User.objects.get(pk=user_id)
-            cart = Cart.objects.create(user=user, cost=0)
+            cart = Cart.objects.create(user=user, cost=request.session["cost"])
             if form.is_valid():
                 user_address_street = form.cleaned_data["street"]
                 user_address_street_num = form.cleaned_data["street_number"]
@@ -308,22 +284,18 @@ class PaymentFromNewAddressView(View):
                     house_number=user_address_house_num,
                 )
         else:
-            cart = Cart.objects.create(cost=0)
-        for product, amount in PaymentFromNewAddressView.LIST_OF_ORDERD_PRODUCTS:
-            cart.cost += product.price * amount
-            CartProduct.objects.create(cart=cart, product=product, amount=amount)
-        cart.save()
+            cart = Cart.objects.create(cost=request.session["cost"])
+        for item in PaymentFromNewAddressView.LIST_OF_ORDERD_PRODUCTS:
+            CartProduct.objects.create(cart=cart, product=item[0], amount=int(item[1]))
+            cart.save()
+        cart.clear_session(request)
         response = render(request, "main.html", {"info": "Zamówienie złożone!"})
-        for cookie_name, cookie_value in request.COOKIES.items():
-            if "product" and "amount" in cookie_name:
-                response.delete_cookie(cookie_name)
         return response
 
 
 class PaymentFromOldAddressView(View):
     """View for ordering from saved address. Accessable only for logged user."""
 
-    TOTAL_COST_FOR_ORDER = 0
     LIST_OF_ORDERD_PRODUCTS = []
 
     def get(self, request, user_id):
@@ -331,21 +303,14 @@ class PaymentFromOldAddressView(View):
         Only difference is, that form takes list of user addresses when called,
         and user cannot be none"""
         user_addresses = User.objects.get(pk=user_id).address_set.all()
-        list_of_products_ids_and_amount = request.session.get("products_ids_and_amount")
+        cart_products = request.session["cart_products"]
+        cost_of_products = request.session["cost"]
         form = UserOldAddressForm(address=user_addresses)
-        list_of_products_models_with_amount = CartView.get_products_from_json(
-            list_of_products_ids_and_amount
-        )
-        total_cost_of_order = CartView.get_products_cost_from_list(
-            list_of_products_models_with_amount
-        )
-        PaymentFromOldAddressView.TOTAL_COST_FOR_ORDER = total_cost_of_order
-        PaymentFromOldAddressView.LIST_OF_ORDERD_PRODUCTS = (
-            list_of_products_models_with_amount
-        )
+        products = Product.get_products_and_amounts_from_list(cart_products)
+        PaymentFromNewAddressView.LIST_OF_ORDERD_PRODUCTS = products
         ctx = {
-            "chosen_products": list_of_products_models_with_amount,
-            "cost": total_cost_of_order,
+            "chosen_products": products,
+            "cost": cost_of_products,
             "form": form,
         }
         return render(request, "old_address_payment.html", ctx)
@@ -362,15 +327,13 @@ class PaymentFromOldAddressView(View):
             not save the address from form.
         """
         user = User.objects.get(pk=user_id)
-        cart = Cart.objects.create(user=user, cost=0)
-        for product, amount in PaymentFromOldAddressView.LIST_OF_ORDERD_PRODUCTS:
-            cart.cost += product.price * amount
-            CartProduct.objects.create(cart=cart, product=product, amount=amount)
-            cart.save()
+        cart = Cart.objects.create(user=user, cost=request.session["cost"])
+        for item in PaymentFromOldAddressView.LIST_OF_ORDERD_PRODUCTS:
+            CartProduct.objects.create(cart=cart, product=item[0], amount=int(item[1]))
+        cart.save()
+        cart.clear_session(request)
         response = render(request, "main.html", {"info": "Zamówienie złożone!"})
-        for cookie_name, cookie_value in request.COOKIES.items():
-            if "product" and "amount" in cookie_name:
-                response.delete_cookie(cookie_name)
+
         return response
 
 

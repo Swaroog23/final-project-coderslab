@@ -18,7 +18,7 @@
         <li>{{product.0.name}} x{{product.1}} </li>
         <form action="" method="POST">
             <label for="delete-btn">Usuń produkt:</label>
-            <button type="submit" id="delete_product" name="delete-btn" value="product_{{product.0.id}}_and_amount">Usuń</button>
+            <button type="submit" id="delete_product" name="delete-btn" value="{{product.0.id}}">Usuń</button>
             {% csrf_token %}
         </form>
     </ul>
@@ -31,6 +31,7 @@
         <a href="/cart/{{user.id}}/new_address_payment/">Zamów na nowy adres</a>
         <a href="/cart/{{user.id}}/old_address_payment/">Zamów na stary adres</a>
     {% else %}
+        <p>Cena: {{cost}}</p>
         <a href="/cart/{{user.id}}/new_address_payment/">Zamów!</a>
     {% endif %}
 {% endif %}

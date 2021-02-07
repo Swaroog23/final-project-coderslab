@@ -29,11 +29,23 @@ class Product(models.Model):
     ingredients = models.ManyToManyField("Ingredients", related_name="products")
     details = models.TextField()
 
+    @staticmethod
+    def get_products_and_amounts_from_list(product_list):
+        list_of_objects = []
+        for item in product_list:
+            list_of_objects.append((Product.objects.get(pk=item[0]), item[1]))
+        return list_of_objects
+
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     product = models.ManyToManyField(Product, through="CartProduct")
     cost = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def clear_session(self, request):
+        for item in request.session["cart_products"]:
+            request.session.pop(item[0])
+        request.session.pop("cost")
 
 
 class CartProduct(models.Model):
